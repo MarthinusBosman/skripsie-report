@@ -1,0 +1,30 @@
+\BOOKMARK [0][-]{chapter*.2}{Declaration}{}% 1
+\BOOKMARK [0][-]{chapter*.4}{Abstract}{}% 2
+\BOOKMARK [0][-]{chapter*.6}{List of Figures}{}% 3
+\BOOKMARK [0][-]{chapter*.7}{List of Tables}{}% 4
+\BOOKMARK [0][-]{chapter*.8}{Nomenclature}{}% 5
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 6
+\BOOKMARK [1][-]{section.1.1}{Motivations}{chapter.1}% 7
+\BOOKMARK [1][-]{section.1.2}{Goals}{chapter.1}% 8
+\BOOKMARK [1][-]{section.1.3}{Contributions}{chapter.1}% 9
+\BOOKMARK [0][-]{chapter.2}{Existing Techniques and Models}{}% 10
+\BOOKMARK [1][-]{section.2.1}{Speech Recognition}{chapter.2}% 11
+\BOOKMARK [2][-]{subsection.2.1.1}{Speech Features}{section.2.1}% 12
+\BOOKMARK [2][-]{subsection.2.1.2}{ML Models}{section.2.1}% 13
+\BOOKMARK [1][-]{section.2.2}{Image Classification using cNNs}{chapter.2}% 14
+\BOOKMARK [1][-]{section.2.3}{Summary of Existing Techniques}{chapter.2}% 15
+\BOOKMARK [0][-]{chapter.3}{Feature Evaluation}{}% 16
+\BOOKMARK [1][-]{section.3.1}{Dynamic Time Warping}{chapter.3}% 17
+\BOOKMARK [1][-]{section.3.2}{Same-different Speech Task}{chapter.3}% 18
+\BOOKMARK [0][-]{chapter.4}{Experimental Setup}{}% 19
+\BOOKMARK [1][-]{section.4.1}{Dataset}{chapter.4}% 20
+\BOOKMARK [1][-]{section.4.2}{Models}{chapter.4}% 21
+\BOOKMARK [1][-]{section.4.3}{Visualization}{chapter.4}% 22
+\BOOKMARK [0][-]{chapter.5}{Experiments}{}% 23
+\BOOKMARK [1][-]{section.5.1}{First Layer}{chapter.5}% 24
+\BOOKMARK [1][-]{section.5.2}{Second Layer}{chapter.5}% 25
+\BOOKMARK [1][-]{section.5.3}{Third Layer}{chapter.5}% 26
+\BOOKMARK [0][-]{chapter.6}{Summary and Conclusion}{}% 27
+\BOOKMARK [0][-]{chapter*.12}{Bibliography}{}% 28
+\BOOKMARK [0][-]{appendix.A}{Sampling the segmentation}{}% 29
+\BOOKMARK [0][-]{appendix.B}{Sampling using another bigram model}{}% 30

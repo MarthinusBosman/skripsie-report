@@ -1,0 +1,62 @@
+\graphicspath{{introduction/fig/}}
+
+\chapter{Introduction}
+\label{chap:introduction}
+
+Modern deep neural networks achieve unparalleled accuracy scores on many machine learning task.
+Although this feat is remarkable, the vast amounts of processing power and labelled training data necessary to achieve these levels of accuracy greatly limit the amount of problems they can be applied to.
+Making these trained models applicable to different types of tasks could massively increase their possible uses without the need for excessive training on each different task.
+But could the learned features of these networks be applied to different tasks?
+
+When humans are born, our brains are bombarded immediately and continuously with data of all different formats about the world around us, such as visual, auditory, taste, smell, touch, etc.
+To process each of these data streams individually would take an enormous amount of processing power.
+Instead, using shared processing techniques for different sensory input could lower the needed processing power significantly, and recent studies have shown that direct relationships between the visual cortex and primary auditory cortex exist\cite{doi:10.1002/hbm.20560}, suggesting that this technique might well be the case within the human brain.
+
+With modern neural networks being loosely inspired by the brains' structure, it may therefore stand to reason that using the same processing techniques employed by the brain in neural networks could show meaningful results.
+Thus, we can attempt to leverage the neural networks for one data type to reveal useful results when applied to another. 
+
+We focus on the task of evaluating feature extraction techniques from a trained vision neural network when applied to speech data against existing feature extraction techniques.
+Our goal is to achieve a feature set that better represents speech data for the task of speech recognition, and to find some qualitative insight on why these extracted features are more useful. 
+
+\section{Motivations}
+
+The task of image classification has improved greatly in the past decades, with models such as the VGG16 network \cite{DBLP:journals/corr/SimonyanZ14a} achieving an accuracy score of 92.7\% on the ImageNet database in 2014, and newer models achieving ~98\% accuracy scores.\cite{ILSVRC15} A large contributor to these results is the amount of training data available to these models, with the ImageNet database consisting of over 14 million labelled images.
+
+The task of speech recognition for the English language has seen similar strides in accuracy growth over the years, but for roughly 4600 languages spoken by more than 1000 people throughout the world and 11 official languages in South Africa, the task of speech recognition is far from solved.
+The limited amount of labelled speech data on all these languages greatly limit the effectiveness of neural networks.
+The task of acquiring speech data for different languages and then labelling it is expensive and time consuming.
+Speech data also varies widely due to different speakers, tones, channels and acoustic conditions.
+It is thus of utmost importance that the features extracted from the data be as efficient as possible to lower the training needs of models.
+
+\section{Methodology}
+
+Image classification made a significant breakthrough in accuracy in 2014 when convolutional neural networks were used to extract features from images through convolutional filters.
+These networks learn from data and adapt the filters to automatically extract the most useful features.
+We aim to test the general nature of these convolutional filters by applying them to speech spectrograms.
+
+The VGG16 CNN trained on the ImageNet database has 13 layers of filters, each with between 64 and 512 filter kernels.
+We adapted the VGG16 network to run be able to run on differently sized spectrograms and filterbanks as well as get the output of individual convolutional layers and kernels.
+We then ran the first 8 layers of filters on speech spectrograms and filterbanks generated from spoken words in the Buckeye English Corpus to obtain feature sets for each word.
+This resulted in 1152 feature sets for each word, and 3\,148\,416 features in total.
+
+The quality of each of these features were determined by using dynamic time warping to calculate a distance metric between the same feature set for two words \cite{DBLP:conf/interspeech/CarlinTJH11}. If this distance score better distinguishes two different words from two similar words for a given feature set, that feature set then more accurately describes the speech data.
+Thus, for a given feature set, the features for each word was compared to every other word, and the distance scores between them were stored in two arrays, one for scores between the same word and one for different words.
+For each feature set, these distance scores were used to calculate an average precision score, which indicates the separability of the two arrays and thus the efficacy of the given feature set.
+These scores were then evaluated against average precision scores for generic filterbanks, MFCCs and spectrograms.
+
+The feature sets with the top 5 highest average precision were combined to form a single feature set, and the average precision for that feature set was calculated.
+This resulted in a feature set with an average precision  higher than any generic feature extraction technique.
+
+\section{Contributions}
+
+This study makes several contributions towards the task of feature extraction for speech data.
+Specifically, we make the following contributions:
+
+\begin{itemize}
+\item We provide a method of feature extraction on speech data that outperforms filterbanks and MFCCs as a method of preprocessing for speech recognition.
+With this technique, we hope to allow training of speech recognition models using less speech data.
+\item We explore new insight into using visual processing techniques on speech spectrograms as a means of extracting useful information from the speech data, qualitatively analysing the visual properties obtained from the top performing convolutional filters.
+\item We make available a library of 2304 different speech feature sets from 2733 different spoken words extracted from the Buckeye Corpus, as well as open-source examples on how to generate these features.
+\item We develop a new technique for High-throughput Computing using GCP's Cloud Functions in conjunction with GCE instances.
+\item We developed and made available a code base for extracting features from speech data using the newly developed technique, as well as an adapted VGG16 TensorFlow model with functionality to allow extraction and visualisation of the outputs of individual convolutional layers and filter kernels applied to differently sized  images.
+\end{itemize}
