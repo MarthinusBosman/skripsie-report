@@ -1,4 +1,94 @@
 \graphicspath{{conclusion/fig/}}
 
 \chapter{Summary and Conclusion}
+
+In extracting and evaluating speech features from a trained vision CNN that are capable of outperforming existing feature extraction techniques, there are a number of tasks that needed to be solved.
+This includes the following focus areas: (i) the adaptation of a TensorFlow CNN to be able to output feature maps from hidden convolutional layers as well as accept multiple sized input tensors, (ii) gaining access to a hardware environment that meets the memory needs in order to calculate these features in a reasonable amount of time, (iii) the development of code to calculate the AP scores of the extracted features, and (iv) the development of a high-throughput computing technique that would allow the calculation of these AP scores to be done completely in parallel.
+
+This report made contributions in all of these focus areas as well as providing some qualitative insight to the results achieved, and a summary of our findings is discussed hereafter, followed by a discussion on how this work may be extended in the future.
+
+\section{Summary}
+
+In Chapter~\ref{chap:current_models}, we investigated the existing techniques for speech feature extraction, namely spectrograms, filterbanks, and MFCCs. 
+We looked at the theoretical derivation of each of these features and the logical reasons why each feature improves feature quality for speech recognition.
+Furthermore, we investigated CNNs by first researching the task of convolution, discussing the theoretical and practical convolution operation.
+We then went on to describe how the convolution algorithm fits in a neural layer, as well as how these layers, as well as max pooling and ReLU layers, fit together within the VGG16 network.
+
+After building a foundation for our feature extraction techniques, we moved on in Chapter~\ref{chap:evaluation} to research the method used to evaluate these features.
+We started by deriving and explaining the DTW distance algorithm, and how it can be used to measure the similarity between two spoken words for a given feature set through the same-different speech task.
+Thereafter we explained how these same and different DTW distances can be used to calculate an AP score by means of a precision-recall curve, and why this AP score is an effective metric to use as a general speech feature quality score.
+
+Having established both our means of extracting features as well as evaluating those extracted features, Chapter~\ref{chap:experimental_setup} went on to look at the practical software and hardware environments required to actually accomplish the feature extraction and evaluation.
+Firstly, we examined the specifics of the Buckeye English Corpus data set, and how exactly the spectrograms, filterbanks, and MFCCs were extracted from it.
+Then moving on to the environments, we started by detailing the local software environment used for development and testing of functions.
+Afterwards we provided an overview of GCP and each of its services, namely GCE, GCS, Cloud Functions and Datalab, that were used to accomplish specific tasks within this project.
+Thereafter we examined in detail the environment and algorithm setup to firstly extract the necessary features using the VGG16 network, as well as evaluating all these features.
+We also looked at the processing time for each of these features and how it is improved immensely by the use of GCP services, sometimes not being possible otherwise.
+
+Chapter~\ref{chap:experiments} detailed the results of performing feature evaluation on all of the extracted features.
+Differentiating between results obtained through spectrograms, filterbanks and MFCCs, as well as whether only one filter or a combination of four were used.
+We also provided some qualitative insight into why the top filters outperformed their benchmarks.
+
+We detail the specific findings throughout this report in the next section.
+
+\section{Findings}
+
+Before detailing the findings of the experiments, we first look at noteworthy findings from the feature extraction and evaluation phase of this study.
+Specifically, we were able to generate useful software for extracting and also visualising the feature maps from within TensorFlow CNNs, as can be seen from the figures in Chapter~\ref{chap:experiments}.
+This software could prove notably useful if the feature extraction techniques used in this study are implemented in the future, perhaps for a different data type.
+
+More notable is the development of a high-throughput computing architecture which was used to calculate the AP scores for all extracted features in parallel.
+This technique, making use of python to iteratively call Cloud Functions through Pub/Sub, each of which instantiates a GCE VM instance to run a preset python script, is a highly effective method for performing massively parallel computations on potentially thousands of machines and can be manipulated to be done without incurring any cost.
+The software for this technique is also freely available and easily customisable to perform any parallel task.
+This is not only useful for this study, but also to any future task requiring parallel computation.
+
+Moving on to the findings from our experiments, we first evaluated the features extracted from each individual VGG16 filter kernel, bearing in mind that all previous layers are first computed and the kernel applied to the output of the last layer.
+These filters were evaluated on three inputs, namely, the spectrograms, filterbanks and MFCCs of the speech data.
+In our first experiment, we evaluated the features obtained from spectrograms, and were able to improve the feature quality in terms of AP score by 691\%.
+This was, however, still lower than the filterbanks benchmark and it was concluded that features obtained solely from spectrograms would either have too low AP score or too large size to be practically feasible as speech features.
+
+In our second experiment, we evaluated the features obtained from filterbanks. 
+We were able to beat the filterbank benchmark AP score by 25.0\%, showing a significant improvement in feature quality, but not enough to outperform our top benchmark score from the MFCCs.
+A noteworthy result was also that a feature from the second convolutional layer was also able to beat the benchmark filterbank score, thus improving feature quality whilst quartering feature size.
+We went on to qualitatively examine the top filters.
+We found that emphasising rising frequencies, thus placing focus on actions such as consonant-to-vowel transitions, was a common aspect between the top filters, suggesting that this information reveals much of the spoken word.
+
+Our third experiment involved the features obtained from MFCCs. Here we finally beat our top benchmark score by 7.8\%, thus proving that features obtained from a trained vision CNN could result in improved speech features.
+The top filter was obtained from layer \texttt{conv1\_2:17}.
+Qualitatively analysing these features showed that some form of spot detection was the common strategy for the top filters, emphasising high spots that are immediately surrounded by low areas.
+
+Finally, we combined the top four filters of (i) the filterbanks and (ii) the MFCCs, forming a single feature for each that was the same size as the original feature.
+These features were in both cases able to outperform the benchmark score, with the features from filterbanks going so far as to outperform any other feature obtained from filterbanks.
+This hinted to combined features being a useful technique, and that perhaps some combination of filters could well outperform all other features.
+Unfortunately, trying all the different combinations was not computationally possible during this study, but could be investigated in the future.
+
+\section{Conclusion}
+
+In conclusion, we have successfully shown that speech features extracted from a trained vision CNN could be more useful in the task of speech recognition.
+This could have various impacts on speech recognition systems that do not have an abundance of labelled training data, being able to more easily distinguish words when using our feature extraction technique.
+It may also be useful for networks that can not be as deep or complex, requiring less neurons to accurately recognise the speech.
+These results also loosely strengthens the argument that the same neural pathways used to process vision in the brain, can also be used to process auditory information.
+
+The work in this study leads to numerous possible future applications and extensions, and these are discussed in the following section.
+
+\section{Future Work}
+\label{chap:future_work}
+
+Various uses of the findings and software within this study may be applicable to possible future research and applications.
+Some recommendations on future work are listed below:
+\begin{itemize}
+    \item The high-throughput computing technique developed during this project can easily be applied to different applications.
+    It is highly recommended that this technique be implemented in future work that requires highly parallel computations.
+    
+    \item It is believed that further research in to different configurations of combined features may lead to even higher quality features.
+    We hope that this will be explored in future research to perhaps find a feature extraction technique with a far higher AP score obtained within this study.
+    
+    \item Following the success of this study, it is hoped that the topic of using feature extraction techniques for one domain being used on a different domain be researched further.
+    Multidisciplinary learning of neural network models could greatly improve the accessibility of deep learning to less fortunate countries and researchers.
+    
+    \item Some improvements to the code used within this study are recommended. 
+    Specifically, it was found that instead of recreating a different TensorFlow graph for each spoken word during the feature extraction phase, it is possible, through the use of variable placeholder tensors, to create only one graph and run all features through that graph.
+    Though this was not implemented within this study, the technique was tested and resulted in reducing the processing time from 24 hours to roughly one minute.
+\end{itemize}
+
 \label{chap:conclusion}

@@ -1,7 +1,7 @@
 \chapter{Feature Evaluation}
 \label{chap:evaluation}
 
-Having established the existing feature extraction techniques as well as the new technique proposed by this study, we now look at a method of evaluating these features against the existing features, proposed by Carlin et al. \cite{DBLP:conf/interspeech/CarlinTJH11}.
+Having established the existing feature extraction techniques as well as the new technique proposed by this study, we now look at a method of evaluating these newly extracted features against the existing features proposed by Carlin et al. \cite{DBLP:conf/interspeech/CarlinTJH11}.
 
 The technique consists of using DTW within the same-different speech task for every extracted feature set, then calculating an AP score per feature set using the same-different results.
 This process is described fully in the following sections.
@@ -16,7 +16,7 @@ It has since been adapted to discover repeated segments in spoken words \cite{DB
 \end{equation}
 where ${||\underline{x}||}_2$ is the L2-norm of vector $\underline{x}$.
 
-For a 2-dimensional speech feature, such as spectrograms, we calculate the cosine distance for each corresponding frame vector between 2 words resulting in a symmetrical distance matrix with structure as follows:
+For a two-dimensional speech feature, such as spectrograms, we calculate the cosine distance for each corresponding frame vector between two words resulting in a distance matrix with structure as follows:
 
 \begin{equation}
     {\mathrm{dist\_mat}}_{m,n} = 
@@ -27,7 +27,7 @@ For a 2-dimensional speech feature, such as spectrograms, we calculate the cosin
   \mathtt{d}\big(\underline{a}[m-1], \underline{b}[0]\big) & \mathtt{d}\big(\underline{a}[m-1], \underline{b}[1]\big) & \cdots & \mathtt{d}\big(\underline{a}[m-1], \underline{b}[n-1]\big)
  \end{bmatrix}
 \end{equation}
-with $\underline{a}$ and $\underline{b}$ the 2-dimensional feature vectors of the two words, first dimension the frames and second dimension the frequencies. 
+with $\underline{a}$ and $\underline{b}$ the two-dimensional feature vectors of the two words, first dimension the frames and second dimension the frequencies. 
 
 Using this distance matrix, we can calculate a DTW cost matrix by essentially finding the lowest cost path through the distance matrix.
 The algorithm to calculate the cost matrix is shown in Algorithm~\ref{alg:dtw}, with only the final value of the cost matrix returned.
@@ -59,33 +59,32 @@ This algorithm is used to define a similarity metric between two spoken word fea
 
 It is expected that a better feature extraction technique would more definitively separate similar spoken words from different ones.
 
-To measure the quality of a given feature set, we calculate the DTW distance between each spoken word within the feature set, separating the distances for two of the same words and two different words.\cite{kamper_elsner_jansen_goldwater_2015}
+To measure the quality of a given feature set, we calculate the DTW distance between each spoken word within the feature set, separating the distances for two of the same words and two different words \cite{kamper_elsner_jansen_goldwater_2015}.
 
-Importantly, iteratively comparing each spoken word to every other spoken word causes the algorithm to be an $O(N^2)$ process, or more precisely it will require $\frac{N^2-N}{2})$ comparisons, where $N$ is the number of words in the feature set, which for the buckeye data set consisting of 2733 spoken words, requires 3733278 comparisons per feature set.
+Importantly, iteratively comparing each spoken word to every other spoken word causes the algorithm to be an $O(N^2)$ process, or more precisely it will require $(\frac{N^2-N}{2})$ comparisons, where $N$ is the number of words in the feature set, which for the Buckeye data set consisting of 2\,733 spoken words, requires 3\,733\,278 comparisons per feature set.
 
 \section{Average Precision}
 
 Once we have obtained two lists per feature set, one with DTW distances for similar words and one for different words, we must now determine the separability of the the scores of the two lists.
-A possible solution could be to calculate a reliability coefficient for the DTW distances\cite{reliability}, but previous studies have found that skewness in the distributions could lead to instability across different feature sets.
-\cite{DBLP:conf/interspeech/CarlinTJH11}
+A possible solution could be to calculate a reliability coefficient for the DTW distances\cite{reliability}, but previous studies have found that skewness in the distributions could lead to instability across different feature sets \cite{DBLP:conf/interspeech/CarlinTJH11}.
 
 Instead, an AP score was calculated by following the method proposed by Carlin et al. \cite{DBLP:conf/interspeech/CarlinTJH11}. To calculate the AP score for a given feature set, we define a threshold $\tau$ for which we assume that for two spoken word vectors, $\underline{a}$ and $\underline{b}$, the two words are the same if $\mathtt{DTW}(\underline{a}, \underline{b}) \leq \tau$. 
 
 For a given value of $\tau$ we are able to calculate two values, namely, the precision and the recall point.
-Precision is defined as the percentage of same word pairs whose DTW distance falls below the threshold, and recall is defined as the percentage of different words that fall above the threshold.
+Precision is defined as the percentage of same word pairs whose DTW distance falls below the threshold, and recall is defined as the percentage of different word DTW distances that fall above the threshold.
 Sweeping $\tau$ from the minimum DTW distance to the maximum distance for a given feature set allows us to draw a precision-recall curve.
-A precision-recall curve for a feature set where the DTW distances are perfectly separated is shown in Figure~\ref{fig:pr-curve} (a), and for the filterbanks and MFCCs of the Buckeye data set in Figure~\ref{fig:pr-curve} (b) and (c).
+A precision-recall curve for a feature set where the DTW distances are perfectly separated is shown in Figure~\ref{fig:pr-curve}, as well as the spectrograms, filterbanks and MFCCs of the Buckeye data set.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth]{content/fig/pr_curve.png}
-    \caption{Precision-recall curves for a perfectly separable feature set, filterbanks and MFCCs for the Buckeye data set.}
+    \caption{Precision-recall curves for a perfectly separable feature set, spectrograms, filterbanks and MFCCs for the Buckeye data set.}
     \label{fig:pr-curve}
 \end{figure}
 
-Note that for a perfect precision-recall curve, the area underneath the curve is 1.
-For the filterbanks and MFCCs, this area is 0.19 and 0.28 respectively.
-The area underneath the curve thus acts as a global metric to measure the separability of a given feature set, thus implying a clear improvement in feature quality from MFCCs against filterbanks.
-It is exactly this metric that we use as our average precision score, with a score of 1 denoting a perfect feature set, and the lower the AP score, the generally more difficult it will be for a model to distinguish between words for the given feature set.
+Note that for a perfect precision-recall curve, the area underneath the curve is exactly 1.
+For the spectrograms, filterbanks and MFCCs, these areas are 0.02347, 0.189 and 0.2843 respectively.
+The area underneath the curve thus acts as a global metric to measure the separability of a given feature set, thus implying a clear improvement in feature quality from filterbanks against spectrograms, and from MFCCs against filterbanks.
+It is exactly this metric that we use as our AP score, with a score of 1 denoting a perfect feature set, and the lower the AP score, the generally more difficult it will be for a model to distinguish between words for the given feature set.
 
 This AP score technique has been shown to correlate well with phone recognition error rates \cite{DBLP:conf/interspeech/CarlinTJH11} and has been used in several other unsupervised studies \cite{kamper_elsner_jansen_goldwater_2015}.
